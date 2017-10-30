@@ -1,8 +1,3 @@
-if __name__ == '__main__':
-    x = [2, 3, 6, 10, 1]
-    print(max(x))
-
-
 class Barber:
     def __init__(self, time):
         self.arrival_time = time
@@ -43,3 +38,9 @@ class Scheduler:
             return [m, s]
         else:
             return []
+
+class ScheduleTool:
+
+    @staticmethod
+    def getrandomjobs():
+        pass
