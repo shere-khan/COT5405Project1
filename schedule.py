@@ -23,6 +23,7 @@ class Scheduler:
         for j in jobs:
             b = self.get_next_barber()
             b.assign(j)
+            self.reassign_order()
 
     def get_next_barber(self):
         b = self.barbers.pop(0)
@@ -30,8 +31,10 @@ class Scheduler:
 
         return b
 
-    def reassign_order(self, barbers):
-        pass
+    def reassign_order(self):
+        l = self.check_income_threshold()
+        if l:
+            self.barbers.pop(self.barbers.index(l[1]))
 
     def check_income_threshold(self):
         m = max(self.barbers, key=lambda x: x.income)
