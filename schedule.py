@@ -8,7 +8,7 @@ class Barber:
         self.bid = bid
 
     def assign(self, job):
-        self.income += job.cost
+        self.income += job
 
     def __repr__(self):
         return "{}".format(self.bid)
@@ -34,7 +34,8 @@ class Scheduler:
         self.barbers.sort(key=lambda x: x.arrival_time)
 
         while jobs:
-            for i in range(5):
+            k = 5 if len(jobs) >= 5 else len(jobs)
+            for i in range(k):
                 b = self.get_next_barber()
                 b.assign(jobs.pop(0))
             self.reassign_order()
@@ -48,12 +49,14 @@ class Scheduler:
     def reassign_order(self):
         l = self.check_income_threshold()
         if l:
-            self.barbers.pop(self.barbers.index(l[1]))
+            b = self.barbers.pop(self.barbers.index(l[1]))
+            self.barbers.insert(0, b)
 
     def check_income_threshold(self):
         m = max(self.barbers, key=lambda x: x.income)
         s = min(self.barbers, key=lambda x: x.income)
         if m.income - s.income > self.threshold:
+            print("max: {}, {}, min: {}, {}".format(m.bid, m.income, s.bid, s.income))
             return [m, s]
         else:
             return []
@@ -68,7 +71,7 @@ class ScheduleTool:
 
     @staticmethod
     def gethardcodedjobs():
-        j = [10, 40, 20, 20, 30, 10, 10, 40, 40, 20, 30, 20, 10, 40, 10, 30, 20,
+        j = [40, 40, 20, 20, 30, 10, 10, 40, 40, 20, 30, 20, 10, 40, 10, 30, 20,
              40, 10, 20, 10, 20, 20, 30, 20, 30, 10, 20, 40]
         return j
 
