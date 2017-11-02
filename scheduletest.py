@@ -8,13 +8,15 @@ class TestProblem2(unittest.TestCase):
 
         sch = schedule.Scheduler(barbers, 30)
 
-        # sch.schedule_jobs(jobs)
         sch.schedule_jobs2(jobs)
 
         for b in sch.barbers:
-            print(b.income)
+            print("{}, {}".format(b.bid, b.income))
 
-        # self.assertEqual(4, 4)
+        m = sch.getmax()
+        s = sch.getmin()
+        rng = m.income - s.income
+        print("The range is {}".format(rng))
 
 if __name__ == '__main__':
     unittest.main()

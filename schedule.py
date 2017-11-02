@@ -1,4 +1,4 @@
-import random
+import random, copy
 
 
 class Barber:
@@ -38,7 +38,7 @@ class Scheduler:
             for i in range(k):
                 b = self.get_next_barber()
                 b.assign(jobs.pop(0))
-            self.reassign_order()
+            self.reassign_order_priority()
 
     def get_next_barber(self):
         b = self.barbers.pop(0)
@@ -46,15 +46,49 @@ class Scheduler:
 
         return b
 
+    def getmax(self):
+        return max(self.barbers, key=lambda x: x.income)
+
+    def getmin(self):
+        return min(self.barbers, key=lambda x: x.income)
+
     def reassign_order(self):
         l = self.check_income_threshold()
         if l:
             b = self.barbers.pop(self.barbers.index(l[1]))
             self.barbers.insert(0, b)
 
-    def check_income_threshold(self):
+    def reassign_order_priority(self):
         m = max(self.barbers, key=lambda x: x.income)
-        s = min(self.barbers, key=lambda x: x.income)
+        limit = m - self.threshold
+        reorder = []
+        for b in self.barbers:
+            if b.income >= limit:
+                reorder.append(b)
+
+        reorder.sort(key=lambda x: x.income)
+
+        while reorder:
+            x = reorder.pop(0)
+            self.barbers.remove(self.barbers.index(x))
+            self.barbers.insert(0, x)
+
+        return reorder
+
+    def direct_assignment_of_job(self):
+        m = max(self.barbers, key=lambda x: x.income)
+        limit = m - self.threshold
+        reorder = []
+        for b in self.barbers:
+            if b.income >= limit:
+                reorder.append(b)
+        reorder.sort(key=lambda x: x.income)
+
+        return reorder
+
+    def check_income_threshold(self):
+        m = self.getmax()
+        s = self.getmin()
         if m.income - s.income > self.threshold:
             print("max: {}, {}, min: {}, {}".format(m.bid, m.income, s.bid, s.income))
             return [m, s]
@@ -72,7 +106,11 @@ class ScheduleTool:
     @staticmethod
     def gethardcodedjobs():
         j = [40, 40, 20, 20, 30, 10, 10, 40, 40, 20, 30, 20, 10, 40, 10, 30, 20,
-             40, 10, 20, 10, 20, 20, 30, 20, 30, 10, 20, 40]
+             40, 40, 20, 10, 20, 20, 30, 20, 30, 10, 20, 40]
+        # j = [40, 40, 20, 20, 30, 10, 10, 40, 40, 20, 30, 20, 10, 40, 10, 30, 20,
+        #      40, 10, 20, 10, 20, 20, 30, 20, 30, 10, 20, 40]
+        # j = [10, 40, 20, 20, 30, 10, 10, 40, 40, 20, 30, 20, 10, 40, 10, 30, 20,
+        #      40, 10, 20, 10, 20, 20, 30, 20, 30, 10, 20, 40]
         return j
 
     @staticmethod
