@@ -1,4 +1,5 @@
-import random, copy
+import random
+from itertools import takewhile
 
 
 class Barber:
@@ -30,7 +31,7 @@ class Scheduler:
             b.assign(j)
             self.reassign_order()
 
-    def schedule_jobs2(self, jobs):
+    def schedule_jobs_reassign_priority(self, jobs):
         self.barbers.sort(key=lambda x: x.arrival_time)
 
         while jobs:
@@ -39,6 +40,20 @@ class Scheduler:
                 b = self.get_next_barber()
                 b.assign(jobs.pop(0))
             self.reassign_order_priority()
+
+    def schedule_jobs_direct_assignment_threshold(self, jobs):
+        self.barbers.sort(key=lambda x: x.arrival_time)
+
+        while jobs:
+            k = 5 if len(jobs) >= 5 else len(jobs)
+            for i in range(k):
+                b = self.get_next_barber()
+                b.assign(jobs.pop(0))
+            reorder = self.check_income_threshold2()
+
+            fivejobs = jobs[:len(self.barbers)]
+            jobs = jobs[len(self.barbers):]
+            self.direct_assignment(reorder, fivejobs)
 
     def get_next_barber(self):
         b = self.barbers.pop(0)
@@ -59,32 +74,18 @@ class Scheduler:
             self.barbers.insert(0, b)
 
     def reassign_order_priority(self):
-        m = max(self.barbers, key=lambda x: x.income)
-        limit = m - self.threshold
-        reorder = []
-        for b in self.barbers:
-            if b.income >= limit:
-                reorder.append(b)
-
-        reorder.sort(key=lambda x: x.income)
+        reorder = self.check_income_threshold2()
 
         while reorder:
             x = reorder.pop(0)
-            self.barbers.remove(self.barbers.index(x))
+            self.barbers.remove(x)
             self.barbers.insert(0, x)
 
-        return reorder
-
-    def direct_assignment_of_job(self):
-        m = max(self.barbers, key=lambda x: x.income)
-        limit = m - self.threshold
-        reorder = []
-        for b in self.barbers:
-            if b.income >= limit:
-                reorder.append(b)
-        reorder.sort(key=lambda x: x.income)
-
-        return reorder
+    def direct_assignment(self, reorder, jobs):
+        jobs.sort()
+        while jobs:
+            b = reorder.pop(0)
+            b.assign(jobs.pop(0))
 
     def check_income_threshold(self):
         m = self.getmax()
@@ -94,6 +95,18 @@ class Scheduler:
             return [m, s]
         else:
             return []
+
+    def check_income_threshold2(self):
+        m = self.getmax()
+        limit = m.income - self.threshold
+        reorder = []
+        for b in self.barbers:
+            if b.income <= limit:
+                reorder.append(b)
+
+        reorder.sort(key=lambda x: x.income)
+
+        return reorder
 
 
 class ScheduleTool:
