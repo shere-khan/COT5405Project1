@@ -70,10 +70,19 @@ class Scheduler:
 
     def reassign_order_og(self):
         cb = copy.copy(self.barbers)
-        while cb:
-            bc = cb.pop(len(cb) - 1)
-            for b in self.barbers:
-                self.check_threshold_diff(b, bc)
+        seen = []
+        for j in reversed(range(len(cb))):
+            bc = cb.pop(j)
+            if bc not in seen:
+                seen.append(bc)
+                min_index = len(self.barbers) - 1
+                # for i in reversed(range(len(self.barbers))):
+                for i in reversed(range(j)):
+                    is_diff = self.check_threshold_diff(self.barbers[i], bc)
+                    if is_diff and i < min_index:
+                        min_index = i
+                to_add = self.barbers.pop(self.barbers.index(bc))
+                self.barbers.insert(i, to_add)
 
     def check_threshold_diff(self, b1, b2):
         diff = b1.income - b2.income
