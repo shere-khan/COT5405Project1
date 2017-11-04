@@ -1,4 +1,4 @@
-import random, copy
+import random
 
 
 class Barber:
@@ -79,7 +79,6 @@ class Scheduler:
         m = self.getmax()
         s = self.getmin()
         if m.income - s.income > self.threshold:
-            print("max: {}, {}, min: {}, {}".format(m.bid, m.income, s.bid, s.income))
             return [m, s]
         else:
             return []
@@ -120,10 +119,6 @@ class ScheduleTool:
     def gethardcodedjobs():
         j = [40, 40, 20, 20, 30, 10, 10, 40, 40, 20, 30, 20, 10, 40, 10, 30, 20,
              40, 40, 20, 10, 20, 20, 30, 20, 30, 10, 20, 40]
-        # j = [40, 40, 20, 20, 30, 10, 10, 40, 40, 20, 30, 20, 10, 40, 10, 30, 20,
-        #      40, 10, 20, 10, 20, 20, 30, 20, 30, 10, 20, 40]
-        # j = [10, 40, 20, 20, 30, 10, 10, 40, 40, 20, 30, 20, 10, 40, 10, 30, 20,
-        #      40, 10, 20, 10, 20, 20, 30, 20, 30, 10, 20, 40]
         return j
 
     @staticmethod
@@ -136,3 +131,8 @@ class ScheduleTool:
         barbers.append(Barber(806, 'E'))
 
         return barbers
+
+    @staticmethod
+    def get_random_jobs(n):
+        l = [10, 20, 30, 40]
+        return [l[random.randint(0, len(l) - 1)] for x in range(n)]
