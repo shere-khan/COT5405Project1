@@ -1,3 +1,4 @@
+import copy
 import random
 
 
@@ -25,16 +26,28 @@ class Scheduler:
     def schedule_jobs(self, jobs):
         self.barbers.sort(key=lambda x: x.arrival_time)
 
-        for j in jobs:
-            b = self.get_next_barber()
-            b.assign(j)
+        while jobs:
+            k = min(5, len(jobs))
+            for i in range(k):
+                b = self.get_next_barber()
+                b.assign(jobs.pop(0))
             self.reassign_order()
+
+    def schedule_jobs_og(self, jobs):
+        self.barbers.sort(key=lambda x: x.arrival_time)
+
+        while jobs:
+            k = min(5, len(jobs))
+            for i in range(k):
+                b = self.get_next_barber()
+                b.assign(jobs.pop(0))
+            self.reassign_order_og()
 
     def schedule_jobs_reassign_priority(self, jobs):
         self.barbers.sort(key=lambda x: x.arrival_time)
 
         while jobs:
-            k = 5 if len(jobs) >= 5 else len(jobs)
+            k = min(5, len(jobs))
             for i in range(k):
                 b = self.get_next_barber()
                 b.assign(jobs.pop(0))
@@ -54,6 +67,17 @@ class Scheduler:
         l = l[n:]
 
         return l, temp
+
+    def reassign_order_og(self):
+        cb = copy.copy(self.barbers)
+        while cb:
+            bc = cb.pop(len(cb) - 1)
+            for b in self.barbers:
+                self.check_threshold_diff(b, bc)
+
+    def check_threshold_diff(self, b1, b2):
+        diff = b1.income - b2.income
+        return True if 0 < diff <= self.threshold else False
 
     def reassign_order(self):
         l = self.check_income_threshold()
@@ -116,14 +140,8 @@ class ScheduleTool:
         return j
 
     @staticmethod
-    def gethardcodedjobs():
-        j = [40, 40, 20, 20, 30, 10, 10, 40, 40, 20, 30, 20, 10, 40, 10, 30, 20,
-             40, 40, 20, 10, 20, 20, 30, 20, 30, 10, 20, 40]
-        return j
-
-    @staticmethod
     def gethardcodedbarbers():
-        barbers = []
+        barbers = list()
         barbers.append(Barber(800, 'A'))
         barbers.append(Barber(815, 'B'))
         barbers.append(Barber(810, 'C'))

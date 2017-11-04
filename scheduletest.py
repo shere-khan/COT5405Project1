@@ -8,24 +8,36 @@ class TestProblem2(unittest.TestCase):
     def compute_average(barbers):
         return sum(b.income for b in barbers) / len(barbers)
 
+    def test_schedule_og(self):
+        avgs = []
+        ranges = []
+        for i in range(100):
+            jobs = schedule.ScheduleTool.get_random_jobs(50)
+            barbers = schedule.ScheduleTool.gethardcodedbarbers()
+            sch = schedule.Scheduler(barbers, 30)
+            sch.schedule_jobs(jobs)
+
+            ranges.append(sch.getmax().income - sch.getmin().income)
+            avgs.append(TestProblem2.compute_average(sch.barbers))
+
+        average = sum(avgs) / len(avgs)
+        print("The average of averages for test 1: {}".format(average))
+        avg_range = sum(ranges) / len(ranges)
+        print("The average range for test 1: {}".format(avg_range))
+        print()
+
     def test_schedule(self):
         avgs = []
         ranges = []
         for i in range(100):
             jobs = schedule.ScheduleTool.get_random_jobs(50)
             barbers = schedule.ScheduleTool.gethardcodedbarbers()
-
             sch = schedule.Scheduler(barbers, 30)
-
             sch.schedule_jobs(jobs)
 
-            m = sch.getmax()
-            s = sch.getmin()
-            ranges.append(m.income - s.income)
-
+            ranges.append(sch.getmax().income - sch.getmin().income)
             avgs.append(TestProblem2.compute_average(sch.barbers))
 
-        # average = TestProblem2.compute_average(avgs)
         average = sum(avgs) / len(avgs)
         print("The average of averages for test 1: {}".format(average))
         avg_range = sum(ranges) / len(ranges)
